@@ -7,6 +7,7 @@
 # By accessing, using, copying or modifying this work you indicate your
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
+# dev
 
 # built-ins
 import os
@@ -14,7 +15,6 @@ import sys
 
 # houdini
 import hou
-#dev
 
 # toolkit
 import sgtk
@@ -631,6 +631,14 @@ class TkMantraNodeHandler(object):
         output_template = self._app.get_template_by_name(
             output_profile[template_name])
 
+        # get the Step name field for the templated Mantra Output
+        step_name = ""
+        try:
+            ctx = self._app.context
+            step_name = ctx.step['name']
+        except:
+            self._app.log_debug("Could not find the Shotgun context Step name.")
+
         # create fields dict with all the metadata
         fields = {
             "name": work_file_fields.get("name", None),
@@ -638,6 +646,7 @@ class TkMantraNodeHandler(object):
             "renderpass": node.name(),
             "SEQ": "FORMAT: $F",
             "version": work_file_fields.get("version", None),
+            "Step" : step_name
         } 
 
         # use %V - full view printout as default for the eye field
