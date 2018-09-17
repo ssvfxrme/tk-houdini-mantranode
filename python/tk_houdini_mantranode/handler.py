@@ -632,22 +632,40 @@ class TkMantraNodeHandler(object):
             output_profile[template_name])
 
         # get the Step name field for the templated Mantra Output
-        step_name = ""
+        entity_name = ""
+         
         try:
             ctx = self._app.context
-            step_name = ctx.step['name']
+            entity_name = ctx.entity['name']
+            entity_type = ctx.entity['type']
         except:
             self._app.log_debug("Could not find the Shotgun context Step name.")
 
         # create fields dict with all the metadata
-        fields = {
-            "name": work_file_fields.get("name", None),
-            "node": node.name(),
-            "renderpass": node.name(),
-            "SEQ": "FORMAT: $F",
-            "version": work_file_fields.get("version", None),
-            "Step" : step_name
-        } 
+        fields = {}
+
+        if entity_type == "Asset":            
+            fields = {
+                "name": work_file_fields.get("name", None),
+                "node": node.name(),
+                "renderpass": node.name(),
+                "HSEQ": "FORMAT: $F",
+                "version": work_file_fields.get("version", None),
+                "sg_asset_type": work_file_fields.get("sg_asset_type", None),
+                "Step" : work_file_fields.get("Step", None),
+                "Asset" : entity_name
+            }
+
+        if entity_type == "Shot":
+            fields = {
+                "name": work_file_fields.get("name", None),
+                "node": node.name(),
+                "renderpass": node.name(),
+                "HSEQ": "FORMAT: $F",
+                "version": work_file_fields.get("version", None),
+                "Step" : work_file_fields.get("Step", None),
+                "Shot" : entity_name
+            } 
 
         # use %V - full view printout as default for the eye field
         fields["eye"] = "%V"
